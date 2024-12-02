@@ -1,52 +1,49 @@
 (function() {
-    let followersUsernames = [];
+    const followersUsernames = [];
     let isParsingFollowers = true;
+    let counter = 0;
 
-    function parsePage() {
+    function processPage() {
         const users = Array.from(document.querySelectorAll('.d-table.table-fixed'));
-        const usernames = users.map(user => {
-            return user.querySelector('.Link--secondary').innerText.trim();
+        users.forEach(user => {
+            const username = user.querySelector('.Link--secondary').innerText.trim();
+
+            if (isParsingFollowers) {
+                followersUsernames.push(username);
+            } else if (!followersUsernames.includes(username)) {
+                const unfollowButton = user.querySelector('form[action*="unfollow?target="] input[type="submit"]');
+                if (unfollowButton && !unfollowButton.disabled) {
+                    unfollowButton.click();
+                    counter++;
+                    console.log(`Unfollowed: ${username}`);
+                } else {
+                    console.log(`Cannot unfollow: ${username}`);
+                }
+            }
         });
 
-        if (isParsingFollowers) {
-            followersUsernames.push(...usernames);
-        } else {
-            users.forEach(user => {
-                const username = user.querySelector('.Link--secondary').innerText.trim();
-                if (!followersUsernames.includes(username)) {
-                    const unfollowForm = user.querySelector('form[action*="unfollow?target="]');
-                    if (unfollowForm) {
-                        const submitButton = unfollowForm.querySelector('input[type="submit"]');
-                        if (submitButton && !submitButton.disabled) {
-                            submitButton.click();
-                            console.log(`Unfollowed: ${username}`);
-                        } else {
-                            console.log(`Unfollow button disabled or not found for: ${username}`);
-                        }
-                    } else {
-                        console.log(`Unfollow form not found for: ${username}`);
-                    }
-                }
-            });
-        }
+        handlePagination();
+    }
 
-        const nextPageLink = document.querySelector('.pagination a[rel="nofollow"]');
-        if (nextPageLink && nextPageLink.innerText.toLowerCase() === 'next') {
-            nextPageLink.click();
-            setTimeout(parsePage, 2000);
+    function handlePagination() {
+        const nextPage = document.querySelector('.pagination a[rel="nofollow"]');
+        if (nextPage && nextPage.innerText.toLowerCase() === 'next') {
+            nextPage.click();
+            setTimeout(processPage, 2000);
         } else {
             if (isParsingFollowers) {
                 isParsingFollowers = false;
-                const followingTab = document.querySelector('a[href*="following"]');
-                if (followingTab) {
-                    followingTab.click();
-                    setTimeout(parsePage, 2000);
-                }
+                document.querySelector('a[href*="following"]').click();
+                setTimeout(processPage, 2000);
             } else {
-                console.log("Finished processing all pages.");
+                if (counter > 0) {
+                    console.log(`Finished processing all pages. Unfollowed ${counter} users.`);
+                } else {
+                    console.log("Finished processing all pages. No new users to unfollow.");
+                }
             }
         }
     }
 
-    parsePage();
+    processPage();
 })();
