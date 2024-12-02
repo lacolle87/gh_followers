@@ -13,6 +13,7 @@
             followersUsernames.push(...usernames);
         } else {
             followingUsernames.push(...usernames);
+            checkForUnfollow(usernames);
         }
 
         const nextPageLink = document.querySelector('.pagination a[rel="nofollow"]');
@@ -27,15 +28,29 @@
                     followingTab.click();
                     setTimeout(parsePage, 2000);
                 }
-            } else {
-                compareLists();
             }
         }
     }
 
-    function compareLists() {
-        const missing = followingUsernames.filter(username => !followersUsernames.includes(username));
-        console.log("Missing Followers:", missing);
+    function checkForUnfollow(usernames) {
+        usernames.forEach(username => {
+            if (!followersUsernames.includes(username)) {
+                const unfollowForm = Array.from(document.querySelectorAll('form[action*="unfollow?target="]'))
+                    .find(form => form.action.includes(username));
+
+                if (unfollowForm) {
+                    const submitButton = unfollowForm.querySelector('input[type="submit"]');
+                    if (submitButton && !submitButton.disabled) {
+                        submitButton.click();
+                        console.log(`Unfollowed: ${username}`);
+                    } else {
+                        console.log(`Unfollow button is disabled or not found for: ${username}`);
+                    }
+                } else {
+                    console.log(`Unfollow button not found for: ${username}`);
+                }
+            }
+        });
     }
 
     parsePage();
