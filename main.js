@@ -39,7 +39,7 @@
                 if (counter > 0) {
                     console.log(`Finished processing all pages. Unfollowed ${counter} users.`);
                 } else {
-                    console.log("Finished processing all pages. No new users to unfollow.");
+                    console.log("Finished processing all pages. No users to unfollow.");
                 }
             }
         }
