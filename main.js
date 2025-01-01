@@ -26,7 +26,7 @@
     }
 
     function handlePagination() {
-        const nextPage = document.querySelector('.pagination a[rel="nofollow"]');
+        const nextPage = document.querySelector('.pagination a[rel="nofollow"]:last-child');
         if (nextPage && nextPage.innerText.toLowerCase() === 'next') {
             nextPage.click();
             setTimeout(processPage, 2000);
