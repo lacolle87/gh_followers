@@ -1,4 +1,4 @@
-# GitHub Follower Manager
+# GitHub Followers Manager
 
 This repository provides a script to help you manage your GitHub followers and following lists. If you're too lazy to set up automation through the GitHub API, you can run the provided script directly in your browser's console to manage your followers and unfollow users who don't follow you back.
 
